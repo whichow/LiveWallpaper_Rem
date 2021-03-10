@@ -1,0 +1,9 @@
+/Android
+/Android.bak
+/Library
+/Temp
+/obj
+*.csproj
+*.sln
+*.apk
+.vscode
