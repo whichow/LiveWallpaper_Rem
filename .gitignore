@@ -1,7 +1,7 @@
-/Android
-/Library
-/Temp
-/obj
+Android/
+Library/
+Temp/
+obj/
 *.csproj
 *.sln
 *.apk
