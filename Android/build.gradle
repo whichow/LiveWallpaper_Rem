@@ -1,11 +1,10 @@
 buildscript {
 	repositories {
 		jcenter()
-        google()
 	}
 
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.0.0'
+		classpath 'com.android.tools.build:gradle:2.1.0'
 	}
 }
 
@@ -27,12 +26,12 @@ dependencies {
 }
 
 android {
-	compileSdkVersion 30
-	buildToolsVersion '30.0.2'
+	compileSdkVersion 28
+	buildToolsVersion '28.0.3'
 
 	defaultConfig {
-		targetSdkVersion 30
-		applicationId 'com.wh.rem'
+		targetSdkVersion 28
+		applicationId 'com.whichow.remlive'
 	}
 
 	lintOptions {
@@ -43,6 +42,12 @@ android {
 		noCompress '.unity3d', '.ress', '.resource', '.obb'
 	}
 
+	signingConfigs { release {
+		storeFile file('C:/Users/wuhao/whichow-release-key.keystore')
+		storePassword 'WH@911208.com'
+		keyAlias 'whichow'
+		keyPassword 'WH@911208.com'
+	} }
 
 	buildTypes {
 		debug {
@@ -52,7 +57,7 @@ android {
 			// Set minifyEnabled to true if you want to run ProGuard on your project
 			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-unity.txt'
-			
+			signingConfig signingConfigs.release
 		}
 	}
 

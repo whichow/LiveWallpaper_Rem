@@ -1,4 +1,4 @@
-package com.wh.rem;
+package com.whichow.remlive;
 
 import android.content.SharedPreferences;
 import android.os.Build;
