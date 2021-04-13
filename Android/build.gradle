@@ -4,7 +4,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'com.android.tools.build:gradle:2.1.0'
+		classpath 'com.android.tools.build:gradle:2.3.3'
 	}
 }
 
@@ -43,7 +43,7 @@ android {
 	}
 
 	signingConfigs { release {
-		storeFile file('C:/Users/wuhao/whichow-release-key.keystore')
+		storeFile file('C:/Users/VIP/Documents/whichow-release-key.keystore')
 		storePassword 'WH@911208.com'
 		keyAlias 'whichow'
 		keyPassword 'WH@911208.com'
