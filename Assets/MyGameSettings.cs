@@ -9,9 +9,7 @@ public class MyGameSettings : MonoBehaviour
 {
 	// public AudioListener listener;
 	public new Light light;
-	public Texture[] background;
-	public GameObject[] effects;
-	public MeshRenderer bgRender;
+	public GameObject[] backgrounds;
 	public GameObject settingsUI;
 	public Button volumeButton;
 	public Button lightButton;
@@ -33,27 +31,13 @@ public class MyGameSettings : MonoBehaviour
 
 	public void ChangeBackground()
 	{
+		backgrounds [bgIndex].SetActive (false);
 		bgIndex++;
-		if(bgIndex >= background.Length)
+		if(bgIndex >= backgrounds.Length)
 		{
 			bgIndex = 0;
 		}
-		if(bgIndex == 5 || bgIndex == 6)
-		{
-			effects[0].SetActive(true);
-			effects[1].SetActive(false);
-		}
-		else if(bgIndex == 2 || bgIndex == 4)
-		{
-			effects[1].SetActive(true);
-			effects[0].SetActive(false);
-		}
-		else
-		{
-			effects[0].SetActive(false);
-			effects[1].SetActive(false);
-		}
-		bgRender.material.mainTexture = background[bgIndex];
+		backgrounds [bgIndex].SetActive (true);
 	}
 
 	void OnGUI()
