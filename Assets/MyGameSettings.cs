@@ -15,8 +15,8 @@ public class MyGameSettings : MonoBehaviour
 	public GameObject[] backgrounds;
 	public GameObject settingsUI;
 	public Button previewButton;
-	public ToggleButton volumeButton;
-	public ToggleButton lightButton;
+	public Button volumeButton;
+	public Button lightButton;
 	public Button bgButton;
 	public bool debug;
 
@@ -26,12 +26,14 @@ public class MyGameSettings : MonoBehaviour
 	{
 		// listener.enabled = !listener.enabled;
 		AudioListener.volume = AudioListener.volume > 0.5f ? 1f : 0f;
+		volumeButton.GetComponentInChildren<Text>().text = AudioListener.volume > 0.5f ? "声音开" : "声音关";
 		PlayerPrefs.SetFloat(VOLUME, AudioListener.volume);
 	}
 
 	public void ToggleLight()
 	{
 		light.enabled = !light.enabled;
+		lightButton.GetComponentInChildren<Text>().text = light.enabled ? "灯光开" : "灯光关";
 		PlayerPrefs.SetInt(LIGHT, light.enabled ? 1 : 0);
 	}
 
@@ -47,15 +49,12 @@ public class MyGameSettings : MonoBehaviour
 		PlayerPrefs.SetInt(BG_INDEX, bgIndex);
 	}
 
-	void OnApplicationFocus(bool hasFocus)
+	void Start()
 	{
-		if(hasFocus)
-		{
-			volumeButton.isOn = PlayerPrefs.GetFloat(VOLUME, 1f) > 0.5f;
-			lightButton.isOn = PlayerPrefs.GetInt(LIGHT, 1) == 1;
-			bgIndex = PlayerPrefs.GetInt(BG_INDEX, 0);
-			backgrounds [bgIndex].SetActive (true);
-		}
+		volumeButton.GetComponentInChildren<Text>().text = PlayerPrefs.GetFloat(VOLUME, 1f) > 0.5f ? "声音开" : "声音关";
+		lightButton.GetComponentInChildren<Text>().text = PlayerPrefs.GetInt(LIGHT, 1) == 1 ? "灯光开" : "灯光关";
+		bgIndex = PlayerPrefs.GetInt(BG_INDEX, 0);
+		backgrounds [bgIndex].SetActive (true);
 	}
 
 	void OnGUI()
@@ -81,7 +80,7 @@ public class MyGameSettings : MonoBehaviour
 		volumeButton.onClick.AddListener(ToggleVolume);
 		lightButton.onClick.AddListener(ToggleLight);
 		bgButton.onClick.AddListener(ChangeBackground);
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
 		previewButton.onClick.AddListener(PreviewWallpaper);
 #endif
 	}
@@ -90,62 +89,42 @@ public class MyGameSettings : MonoBehaviour
 		volumeButton.onClick.RemoveListener(ToggleVolume);
 		lightButton.onClick.RemoveListener(ToggleLight);
 		bgButton.onClick.RemoveListener(ChangeBackground);
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
 		previewButton.onClick.RemoveListener(PreviewWallpaper);
 #endif
 	}
 
-#if UNITY_ANDROID
-	class ActiveCallback : AndroidJavaProxy
-    {
-		public delegate void ActiveEventHandler(bool active);
-		public event ActiveEventHandler activeEventHandler;
+#if UNITY_ANDROID && !UNITY_EDITOR
+    private AndroidJavaClass appClass;
+    private AndroidJavaClass activityClass;
+    private AndroidJavaClass wrapperClass;
+    private AndroidJavaObject wrapperObject;
 
-        public ActiveCallback() : base("com.whichow.remlive.UnityPlayerProxy$ActivityActiveListener") {}
-        private void onActivityActive(bool active)
-        {
-            activeEventHandler.Invoke(active);
-        }
+    private string activity = "ulw.ulw.ulw.UnityPlayerActivity";
+    private string wrapper = "ulw.ulw.ulw.Wrapper";
+	private string app = "ulw.ulw.ulw.App";
+
+    void Awake()
+    {
+		appClass = new AndroidJavaClass(app);
+        activityClass = new AndroidJavaClass(activity);
+        wrapperClass = new AndroidJavaClass(wrapper);
+        wrapperObject = wrapperClass.CallStatic<AndroidJavaObject>("instance");
     }
 
-	private AndroidJavaClass LiveWallpaperManager;
-	private AndroidJavaClass UnityPlayerProxy;
-
-	void Awake()
-	{
-		try
-		{
-			LiveWallpaperManager = new AndroidJavaClass("com.whichow.remlive.LiveWallpaperManager");
-			// bool isPreview = LiveWallpaperManager.CallStatic<bool>("isPreview");
-			// if(isPreview)
-			// {
-			// 	settingsUI.gameObject.SetActive(false);
-			// }
-			// else
-			// {
-			// 	settingsUI.gameObject.SetActive(true);
-			// }
-		}
-		catch(System.Exception e)
-		{
-			Debug.LogError(e);
-		}
-
-		try
-		{
-			UnityPlayerProxy = new AndroidJavaClass("com.whichow.remlive.UnityPlayerProxy");
-			ActiveCallback callback = new ActiveCallback();
-			callback.activeEventHandler += OnActivityActive;
-			UnityPlayerProxy.CallStatic("setActivityActiveListener", callback);
-		}
-		catch(System.Exception e)
-		{
-			Debug.LogError(e);
-		}
-	}
-
-    private void OnActivityActive(bool active)
+    public void PreviewWallpaper()
     {
+        activityClass.CallStatic("StartService");
+    }
+
+    public void Wrapper()
+    {
+        wrapperObject.Call("Start");
+    }
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        bool active = appClass.GetStatic<bool>("ACT");
         if(active)
 		{
 			settingsUI.gameObject.SetActive(true);
@@ -155,17 +134,5 @@ public class MyGameSettings : MonoBehaviour
 			settingsUI.gameObject.SetActive(false);
 		}
     }
-
-    private void PreviewWallpaper()
-	{
-		try
-		{
-			LiveWallpaperManager.CallStatic("previewWallpaper");
-		}
-		catch (System.Exception e)
-		{
-			Debug.LogError(e);
-		}
-	}
 #endif
 }
