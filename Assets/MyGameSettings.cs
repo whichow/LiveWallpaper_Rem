@@ -25,7 +25,7 @@ public class MyGameSettings : MonoBehaviour
 	public void ToggleVolume()
 	{
 		// listener.enabled = !listener.enabled;
-		AudioListener.volume = AudioListener.volume > 0.5f ? 1f : 0f;
+		AudioListener.volume = AudioListener.volume > 0.5f ? 0f : 1f;
 		volumeButton.GetComponentInChildren<Text>().text = AudioListener.volume > 0.5f ? "声音开" : "声音关";
 		PlayerPrefs.SetFloat(VOLUME, AudioListener.volume);
 	}
