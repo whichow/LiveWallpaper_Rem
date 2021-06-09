@@ -5,8 +5,10 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -113,6 +115,16 @@ public class UnityPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override protected void onPause()
     {
         super.onPause();
+        PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
+        boolean isScreenOn;
+        if(Build.VERSION.SDK_INT >= 20) {
+            isScreenOn = powerManager.isInteractive();
+        } else {
+            isScreenOn = powerManager.isScreenOn();
+        }
+        if(!isScreenOn) {
+            moveTaskToBack(true);
+        }
         App.mUnityPlayer.pause();
     }
 
@@ -186,7 +198,14 @@ public class UnityPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     // Pass any events not handled by (unfocused) views straight to UnityPlayer
     @Override public boolean onKeyUp(int keyCode, KeyEvent event)     { return App.mUnityPlayer.injectEvent(event); }
-    @Override public boolean onKeyDown(int keyCode, KeyEvent event)   { return App.mUnityPlayer.injectEvent(event); }
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event)   {
+        switch(keyCode)
+        {
+            case KeyEvent.KEYCODE_BACK:
+                moveTaskToBack(true);
+        }
+        return App.mUnityPlayer.injectEvent(event);
+    }
     @Override public boolean onTouchEvent(MotionEvent event)          { return App.mUnityPlayer.injectEvent(event); }
     /*API12*/ public boolean onGenericMotionEvent(MotionEvent event)  { return App.mUnityPlayer.injectEvent(event); }
 
