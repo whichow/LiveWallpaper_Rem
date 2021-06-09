@@ -4,18 +4,25 @@ import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 public class UnityPlayerActivity extends Activity implements SurfaceHolder.Callback
 {
 
     static UnityPlayerActivity activity;
     static SurfaceView view;
+    private final int SPLASH_DISPLAY_LENGHT = 3000;
 
     public static void StartService()
     {
@@ -25,7 +32,6 @@ public class UnityPlayerActivity extends Activity implements SurfaceHolder.Callb
         activity.startActivity(intent);
     }
 
-    
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
@@ -36,6 +42,30 @@ public class UnityPlayerActivity extends Activity implements SurfaceHolder.Callb
         view = new SurfaceView(this);
         view.getHolder().addCallback(this);
         setContentView(view);
+
+        ImageView splashImageView = new ImageView(this);
+        int splash = getResources().getIdentifier("unity_static_splash", "drawable", getPackageName());
+        splashImageView.setImageResource(splash);
+        splashImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        splashImageView.setAdjustViewBounds(true);
+
+        FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        frameLayoutParams.gravity = Gravity.BOTTOM;
+
+        FrameLayout splashView = new FrameLayout(this);
+        splashView.setBackgroundColor(Color.WHITE);
+        splashView.addView(splashImageView, frameLayoutParams);
+
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        addContentView(splashView, layoutParams);
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ((ViewGroup)splashView.getParent()).removeView(splashView);
+            }
+        }, SPLASH_DISPLAY_LENGHT);
     }
 
     // SURFACE VIEW ZONE START
@@ -54,7 +84,7 @@ public class UnityPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        
+
         if (!WallpaperUtility.isULWActive(activity.getApplicationContext()))
         {
             App.mUnityPlayer.pause();
