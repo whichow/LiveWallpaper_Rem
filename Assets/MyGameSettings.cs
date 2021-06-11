@@ -51,8 +51,25 @@ public class MyGameSettings : MonoBehaviour
 
 	void Start()
 	{
-		volumeButton.GetComponentInChildren<Text>().text = PlayerPrefs.GetFloat(VOLUME, 1f) > 0.5f ? "声音开" : "声音关";
-		lightButton.GetComponentInChildren<Text>().text = PlayerPrefs.GetInt(LIGHT, 1) == 1 ? "灯光开" : "灯光关";
+		if(PlayerPrefs.GetFloat(VOLUME, 1f) > 0.5f)
+		{
+			volumeButton.GetComponentInChildren<Text>().text = "声音开";
+			AudioListener.volume = 1f;
+		}
+		else
+		{
+			volumeButton.GetComponentInChildren<Text>().text = "声音关";
+			AudioListener.volume = 0f;
+		}
+		if(PlayerPrefs.GetInt(LIGHT, 1) == 1)
+		{
+			lightButton.GetComponentInChildren<Text>().text = "灯光开";
+		}
+		else
+		{
+			lightButton.GetComponentInChildren<Text>().text = "灯光关";
+		}
+		
 		bgIndex = PlayerPrefs.GetInt(BG_INDEX, 0);
 		backgrounds [bgIndex].SetActive (true);
 	}

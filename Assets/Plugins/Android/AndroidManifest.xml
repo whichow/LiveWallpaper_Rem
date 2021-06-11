@@ -10,7 +10,7 @@
       </intent-filter>
       <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
     </activity>
-    <service android:name="ulw.ulw.ulw.UnityWallpaperService" android:label="Unity Live Wallpaper" android:permission="android.permission.BIND_WALLPAPER">
+    <service android:name="ulw.ulw.ulw.UnityWallpaperService" android:label="RemLive" android:permission="android.permission.BIND_WALLPAPER">
       <intent-filter>
         <action android:name="android.service.wallpaper.WallpaperService" />
       </intent-filter>
