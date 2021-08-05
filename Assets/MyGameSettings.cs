@@ -8,15 +8,18 @@ public class MyGameSettings : MonoBehaviour
 {
 	private static readonly string VOLUME = "VOLUME";
 	private static readonly string LIGHT = "LIGHT";
+	private static readonly string BLUR = "BLUR";
 	private static readonly string BG_INDEX = "BG_INDEX";
 
 	// public AudioListener listener;
 	public new Light light;
+	public PostprocessingBlur blur;
 	public GameObject[] backgrounds;
 	public GameObject settingsUI;
 	public Button previewButton;
 	public Button volumeButton;
 	public Button lightButton;
+	public Button blurButton;
 	public Button bgButton;
 	public bool debug;
 
@@ -35,6 +38,13 @@ public class MyGameSettings : MonoBehaviour
 		light.enabled = !light.enabled;
 		lightButton.GetComponentInChildren<Text>().text = light.enabled ? "灯光开" : "灯光关";
 		PlayerPrefs.SetInt(LIGHT, light.enabled ? 1 : 0);
+	}
+
+	public void ToggleBlur()
+	{
+		blur.enabled = !blur.enabled;
+		blurButton.GetComponentInChildren<Text>().text = blur.enabled ? "模糊开" : "模糊关";
+		PlayerPrefs.SetInt(BLUR, blur.enabled ? 1 : 0);
 	}
 
 	public void ChangeBackground()
@@ -69,6 +79,14 @@ public class MyGameSettings : MonoBehaviour
 		{
 			lightButton.GetComponentInChildren<Text>().text = "灯光关";
 		}
+		if(PlayerPrefs.GetInt(BLUR, 1) == 1)
+		{
+			blurButton.GetComponentInChildren<Text>().text = "模糊开";
+		}
+		else
+		{
+			blurButton.GetComponentInChildren<Text>().text = "模糊关";
+		}
 		
 		bgIndex = PlayerPrefs.GetInt(BG_INDEX, 0);
 		backgrounds [bgIndex].SetActive (true);
@@ -86,6 +104,10 @@ public class MyGameSettings : MonoBehaviour
 			{
 				ToggleLight();
 			}
+			if(GUILayout.Button("Blur"))
+			{
+				ToggleBlur();
+			}
 			if(GUILayout.Button("Background"))
 			{
 				ChangeBackground();
@@ -96,6 +118,7 @@ public class MyGameSettings : MonoBehaviour
 	private void OnEnable() {
 		volumeButton.onClick.AddListener(ToggleVolume);
 		lightButton.onClick.AddListener(ToggleLight);
+		blurButton.onClick.AddListener(ToggleBlur);
 		bgButton.onClick.AddListener(ChangeBackground);
 #if UNITY_ANDROID && !UNITY_EDITOR
 		previewButton.onClick.AddListener(PreviewWallpaper);
@@ -105,6 +128,7 @@ public class MyGameSettings : MonoBehaviour
 	private void OnDisable() {
 		volumeButton.onClick.RemoveListener(ToggleVolume);
 		lightButton.onClick.RemoveListener(ToggleLight);
+		blurButton.onClick.RemoveListener(ToggleBlur);
 		bgButton.onClick.RemoveListener(ChangeBackground);
 #if UNITY_ANDROID && !UNITY_EDITOR
 		previewButton.onClick.RemoveListener(PreviewWallpaper);
